@@ -9,7 +9,8 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import StatusScreen from '../screens/StatusScreen';
-import WelcomeScreen from '../screens/WelcomeScreen'
+import WelcomeScreen from '../screens/WelcomeScreen';
+import AssistantScreen from '../screens/AssistantScreen';
 
 export default TabNavigator(
   {
@@ -20,7 +21,7 @@ export default TabNavigator(
       screen: StatusScreen,
     },
     Assistant: {
-      screen: WelcomeScreen,
+      screen: AssistantScreen,
     },
   },
   {

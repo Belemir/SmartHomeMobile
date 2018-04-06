@@ -1,10 +1,19 @@
 import React, { Component } from 'react';
-import {  StyleSheet, View, Text, Image } from 'react-native'; 
+import {  StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'; 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Images from '@assets/images';
+import Speech from 'react-native-speech';
+import Voice from 'react-native-voice';
 
 
-class WelcomeScreen extends Component{
+class AssistantScreen extends Component{
+
+    speech(){
+        Speech.speak({
+            text: 'Merhaba, bu bir testtir',
+            voice: 'tr_TR'
+        })
+    }
 
     render(){
         const { containerStyle, textStyle, iconStyle } = styles   
@@ -15,8 +24,12 @@ class WelcomeScreen extends Component{
                     style={iconStyle}
                 />
                 <Text style={textStyle}>
-                    Welcome To Smart Home Simulator
+                    Welcome To AssistantScreen
                 </Text>
+
+                <TouchableOpacity onPress={this.speech.bind()}>
+                    <Text>Speak plz</Text>
+                </TouchableOpacity>
                
             </View>
           );
@@ -43,4 +56,4 @@ class WelcomeScreen extends Component{
 
         
 
-export default WelcomeScreen;
+export default AssistantScreen;
