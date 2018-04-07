@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Button, StyleSheet, View } from 'react-native';
 import { Constants, Speech } from 'expo';
 import Touchable from 'react-native-platform-touchable'; // 1.1.1
+import Voice from 'react-native-voice';
 
 const EXAMPLES = [
   { language: 'en', text: 'Hello world' },
