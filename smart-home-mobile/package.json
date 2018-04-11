@@ -15,7 +15,8 @@
     "react-native-speech": "^0.1.2",
     "react-native-super-grid": "^2.1.0",
     "react-native-voice": "^0.2.6",
-    "react-navigation": "^1.5.9"
+    "react-navigation": "^1.5.9",
+    "socket.io-client": "^2.1.0"
   },
   "devDependencies": {
     "jest-expo": "^26.0.0"

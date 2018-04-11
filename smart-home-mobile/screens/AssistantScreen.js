@@ -2,13 +2,12 @@ import React from 'react';
 import { Text, Button, StyleSheet, View } from 'react-native';
 import { Constants, Speech } from 'expo';
 import Touchable from 'react-native-platform-touchable'; // 1.1.1
-import Voice from 'react-native-voice';
 
 const EXAMPLES = [
-  { language: 'en', text: 'Hello world' },
+  { language: 'en', text: 'Salam Kadyr, gowmy?' },
   { language: 'es', text: 'Hola mundo' },
-  { language: 'en', text: 'Charlie Cheever chased a chortling choosy child' },
-  { language: 'en', text: 'Adam Perry ate a pear in pairs in Paris' },
+  { language: 'en', text: 'Salam Hezo, gowmy?' },
+  { language: 'en', text: 'Salam Soolo, gowmy' },
 ];
 
 if (!Constants.isDevice) {
@@ -36,9 +35,6 @@ class AmountControlButton extends React.Component {
 }
 
 export default class AssistantScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Speech',
-  };
 
   state = {
     selectedExample: EXAMPLES[0],
