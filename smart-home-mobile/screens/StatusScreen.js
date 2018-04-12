@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import {  StyleSheet, View, Text, Image } from 'react-native'; 
 import socketIOClient from 'socket.io-client';
+import { Speech } from 'expo';
 import Icon from 'react-native-vector-icons/Ionicons';
 import GridView from 'react-native-super-grid';
 import Images from '@assets/images';
 
 const LOADING_TEXT = "Fetching Data ...";
+const ASSISTANT_INITIAL_SPEECH = "Welcome to the smart home simulator, If you want to get assistant support, just click the right corner on the bottom of the screen";
 
 class StatusScreen extends Component{
 
@@ -20,9 +22,36 @@ class StatusScreen extends Component{
       motionStatus: LOADING_TEXT,
       lightStatus: LOADING_TEXT,
       endpoint: "http://192.168.1.109:8888",
-      isLoggedIn: true
+      isLoggedIn: true,
+      speechText: ASSISTANT_INITIAL_SPEECH ,
+      inProgress: false,
+      pitch: 1,
+      rate: 1,
     }; 
-  }
+  };
+
+  _speak = () => {
+    const start = () => {
+      this.setState({ inProgress: true });
+    };
+    const complete = () => {
+      this.state.inProgress && this.setState({ inProgress: false });
+    };
+
+    Speech.speak(this.state.speechText, {
+      language: 'en',
+      pitch: this.state.pitch,
+      rate: this.state.rate,
+      onStart: start,
+      onDone: complete,
+      onStopped: complete,
+      onError: complete,
+    });
+  };
+
+  _stop = () => {
+    Speech.stop();
+  };    
 
   
 
@@ -35,6 +64,7 @@ class StatusScreen extends Component{
       lightStatus: data.lightstatus,
       rainStatus: data.rainstatus 
     }));
+    this._speak();
   }
 
   _handleGarageButton = () =>{

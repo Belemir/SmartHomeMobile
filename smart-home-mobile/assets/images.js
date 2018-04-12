@@ -5,7 +5,8 @@ const images = {
     rainIcon: require('./images/rain.png'),
 	lightIcon: require('./images/light.png'),
 	motionIcon: require('./images/motion.png'),
-	iotIcon: require('./images/iot.png')
+	iotIcon: require('./images/iot.png'),
+	assistantIcon: require('./images/assistant.png')
 };
 
 
