@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  StyleSheet, View, Text, Image } from 'react-native'; 
+import {  StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'; 
 import socketIOClient from 'socket.io-client';
 import { Speech } from 'expo';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -7,7 +7,11 @@ import GridView from 'react-native-super-grid';
 import Images from '@assets/images';
 
 const LOADING_TEXT = "Fetching Data ...";
-const ASSISTANT_INITIAL_SPEECH = "Welcome to the smart home simulator, If you want to get assistant support, just click the right corner on the bottom of the screen";
+const ASSISTANT_INITIAL_SPEECH = "This screen contains smart home status, If you want to get assistant support, just click the right corner on the bottom of the screen";
+
+
+const endpoint = "http://192.168.1.109:8888";
+const socket = socketIOClient(endpoint); 
 
 class StatusScreen extends Component{
 
@@ -17,12 +21,15 @@ class StatusScreen extends Component{
     this.state = {
       heatStatus: LOADING_TEXT,
       gasStatus: LOADING_TEXT,
-      garageStatus: 'Garage is Closed',
+      garageStatus: false,
       rainStatus: LOADING_TEXT,
       motionStatus: LOADING_TEXT,
       lightStatus: LOADING_TEXT,
       endpoint: "http://192.168.1.109:8888",
       isLoggedIn: true,
+      kitchenLightStatus: false,
+      livingRoomLightStatus: false,
+      garageLightStatus: false,
       speechText: ASSISTANT_INITIAL_SPEECH ,
       inProgress: false,
       pitch: 1,
@@ -51,13 +58,67 @@ class StatusScreen extends Component{
 
   _stop = () => {
     Speech.stop();
-  };    
-
+  };
   
+  _handleIconClick = iconName => {
 
-  componentDidMount() {
-    const { endpoint } = this.state;
-    const socket = socketIOClient(endpoint);  
+    let { garageStatus,
+          livingRoomLightStatus,
+          garageLightStatus,
+          kitchenLightStatus
+        } = this.state;
+
+    let garageDoorSpeech = garageStatus ? 'Garage was closed' : 'Garage was opened';
+    let livingRoomLightSpeech = livingRoomLightStatus ? 'Living room light was switched off' : 'Living room light was switched on';
+    let garageLightSpeech = garageLightStatus ? 'Garage light was switched off' : 'Garage light was switched on';
+    let kitchenLightSpeech = kitchenLightStatus ? 'Kitchen light was switched off' : 'Kitchen light was switched on';
+    
+    switch(iconName){
+      case 'Garage Door':
+           this.setState({
+             garageStatus: !this.state.garageStatus,
+             speechText: garageDoorSpeech
+           }, () => {
+             socket.emit('garageDoorEvent',{ garageData: this.state.garageStatus });
+             this._speak();
+           });
+           break;
+
+
+       
+       case 'Kitchen Light':
+           this.setState({
+             kitchenLightStatus: !this.state.kitchenLightStatus,
+             speechText: kitchenLightSpeech
+           }, () => {
+             socket.emit('kitchenLightEvent',{ kitchenLightData: this.state.kitchenLightStatus });
+             this._speak();
+           });
+           break;
+
+       case 'Living Room Light':
+           this.setState({
+             livingRoomLightStatus: !this.state.livingRoomLightStatus,
+             speechText: livingRoomLightSpeech
+           }, () => {
+             socket.emit('livingRoomLightEvent',{ livingRoomLightData: this.state.livingRoomLightStatus });
+             this._speak();
+           });
+           break;
+
+       case 'Garage Light':
+           this.setState({
+             garageLightStatus: !this.state.garageLightStatus,
+             speechText: garageLightSpeech
+           }, () => {
+             socket.emit('garageLightEvent',{ garageLightData: this.state.garageLightStatus });
+             this._speak();
+           });
+           break;
+    }
+ }
+ 
+  componentDidMount() { 
     socket.on("sendingsensordata", data => this.setState({ 
       heatStatus: data.dhtstatus,
       motionStatus: data.motionstatus,
@@ -67,27 +128,25 @@ class StatusScreen extends Component{
     this._speak();
   }
 
-  _handleGarageButton = () =>{
-    const { endpoint } = this.state;
-    const socket = socketIOClient(endpoint);
-    this.setState({
-      garageStatus: !this.state.garageStatus
-    })
-    socket.emit('garagedata',{ garagedata: this.state.garageStatus });
-  }
-
     render(){   
 
-      let { 
-        isLoggedIn,
-        heatStatus,
-        gasStatus, 
-        garageStatus,
-        rainStatus,
-        lightStatus,
-        motionStatus
-      } = this.state;
+    let { 
+      isLoggedIn,
+      heatStatus,
+      gasStatus, 
+      garageStatus,
+      rainStatus,
+      lightStatus,
+      motionStatus,
+      kitchenLightStatus,
+      garageLightStatus,
+      livingRoomLightStatus
+    } = this.state;
 
+    let garageDoorTitle = garageStatus ? 'Garage is OPEN' : 'Garage is CLOSED';
+    let kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
+    let garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
+    let livingRoomLightTitle = livingRoomLightStatus ? 'Light is ON' : 'Light is OFF';
        
     const items = [
       { 
@@ -106,7 +165,7 @@ class StatusScreen extends Component{
         name: 'Garage Door', 
         code: '#3498db', 
         imgurl: Images.garageIcon, 
-        content:  garageStatus 
+        content:  garageDoorTitle 
       },
       { 
         name: 'Rain Status:', 
@@ -130,19 +189,19 @@ class StatusScreen extends Component{
         name: 'Kitchen Light', 
         code: '#27ae60', 
         imgurl:  Images.lightIcon, 
-        content: heatStatus
+        content: kitchenLightTitle
       },
       { 
         name: 'Living Room Light', 
         code: '#2980b9', imgurl:  
         Images.lightIcon, 
-        content: heatStatus
+        content: livingRoomLightTitle
       },
       { 
         name: 'Garage Light', 
         code: '#8e44ad', 
         imgurl:  Images.lightIcon, 
-        content: heatStatus
+        content: garageLightTitle
       }
     ];
     
@@ -154,11 +213,12 @@ class StatusScreen extends Component{
               style={styles.gridView}
               renderItem={item => (
                 <View style={[styles.itemContainer, { backgroundColor: item.code }]}>
-                
-                  <Image 
-                    source={item.imgurl}
-                    style={styles.imageStyle}
-                    />
+                  <TouchableOpacity onPress={() => this._handleIconClick(item.name)}>
+                    <Image 
+                      source={item.imgurl}
+                      style={styles.imageStyle}
+                      />
+                   </TouchableOpacity> 
 
                   <Text style={styles.itemName}>
                   { item.name }
