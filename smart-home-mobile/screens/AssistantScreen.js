@@ -5,34 +5,67 @@ import { Text,
          View, 
          TouchableOpacity, 
          Image } from 'react-native';
+import socketIOClient from 'socket.io-client';
 import { Speech } from 'expo';
 import Touchable from 'react-native-platform-touchable'; // 1.1.1
 import Images from '@assets/images';
 
+
+const LOADING_TEXT = "Fetching Data ...";
 const ASSISTANT_INITIAL_SPEECH = 'Hello, I am your assistant, data from sensors are being fetched, you can check home status by clicking center of the screen';
+
+
+const endpoint = "http://192.168.1.109:8888";
+const socket = socketIOClient(endpoint); 
+
 
 export default class AssistantScreen extends React.Component {
 
-  state = {
-    speechText: ASSISTANT_INITIAL_SPEECH,
-    inProgress: false,
-    pitch: 1,
-    rate: 1,
+  constructor(props){
+    super(props)
+    this.state = {
+      temperature: LOADING_TEXT,
+      humidity: LOADING_TEXT,
+      gasStatus: LOADING_TEXT,
+      garageStatus: false,
+      rainStatus: LOADING_TEXT,
+      motionStatus: LOADING_TEXT,
+      lightStatus: LOADING_TEXT,
+      endpoint: "http://192.168.1.109:8888",
+      isLoggedIn: true,
+      kitchenLightStatus: false,
+      livingRoomLightStatus: false,
+      garageLightStatus: false,
+      speechText: ASSISTANT_INITIAL_SPEECH ,
+      inProgress: false,
+      pitch: 1,
+      rate: 1,
+    }; 
   };
 
   componentDidMount(){
+    socket.on("sendingsensordata", data => this.setState({ 
+      temperature: data.temperature,
+      humidity: data.humidity,
+      motionStatus: data.motionstatus,
+      lightStatus: data.lightstatus,
+      rainStatus: data.rainstatus 
+    }, () => {
+      this.setState({
+        speechText: `Heat Status ${temperature} celsius and ${humidity} percent of humidity
+                     Motion Status ${motionStatus}
+                     Light Status ${lightStatus}
+                     Rain Status ${rainStatus}
+                    `
+      })
+    }));
     this._speak();
   }
 
   render() {
     return (
         <View style={styles.container}>
-          {/* <Button
-            disabled={this.state.inProgress}
-            onPress={this._speak}
-            title="Speak"
-            style={styles.speakButtonStyle}
-          /> */}
+          
 
           <TouchableOpacity
             style={ styles.speakButtonStyle}
@@ -44,12 +77,7 @@ export default class AssistantScreen extends React.Component {
           />
           </TouchableOpacity>
 
-          {/* <Button
-            disabled={!this.state.inProgress}
-            onPress={this._stop}
-            title="Stop"
-            style={styles.stopButtonStyle}
-          /> */}
+        
         </View>
     );
   }

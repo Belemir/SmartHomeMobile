@@ -19,7 +19,8 @@ class StatusScreen extends Component{
     super();
     
     this.state = {
-      heatStatus: LOADING_TEXT,
+      temperature: LOADING_TEXT,
+      humidity: LOADING_TEXT,
       gasStatus: LOADING_TEXT,
       garageStatus: false,
       rainStatus: LOADING_TEXT,
@@ -30,6 +31,7 @@ class StatusScreen extends Component{
       kitchenLightStatus: false,
       livingRoomLightStatus: false,
       garageLightStatus: false,
+      gardenLightStatus: false,
       speechText: ASSISTANT_INITIAL_SPEECH ,
       inProgress: false,
       pitch: 1,
@@ -65,15 +67,18 @@ class StatusScreen extends Component{
     let { garageStatus,
           livingRoomLightStatus,
           garageLightStatus,
-          kitchenLightStatus
+          kitchenLightStatus,
+          gardenLightStatus
         } = this.state;
 
     let garageDoorSpeech = garageStatus ? 'Garage was closed' : 'Garage was opened';
     let livingRoomLightSpeech = livingRoomLightStatus ? 'Living room light was switched off' : 'Living room light was switched on';
     let garageLightSpeech = garageLightStatus ? 'Garage light was switched off' : 'Garage light was switched on';
     let kitchenLightSpeech = kitchenLightStatus ? 'Kitchen light was switched off' : 'Kitchen light was switched on';
+    let gardenLightSpeech = gardenLightStatus ? 'Garden light was switched off' : 'Garden light was switched on';
     
     switch(iconName){
+
       case 'Garage Door':
            this.setState({
              garageStatus: !this.state.garageStatus,
@@ -85,7 +90,6 @@ class StatusScreen extends Component{
            break;
 
 
-       
        case 'Kitchen Light':
            this.setState({
              kitchenLightStatus: !this.state.kitchenLightStatus,
@@ -115,24 +119,43 @@ class StatusScreen extends Component{
              this._speak();
            });
            break;
+        
+
+        case 'Garden Light':
+        this.setState({
+          gardenLightStatus: !this.state.gardenLightStatus,
+          speechText: gardenLightSpeech
+        }, () => {
+          socket.emit('gardenLightEvent',{ gardenLightData: this.state.garageLightStatus });
+          this._speak();
+        });
+        break;
     }
  }
  
-  componentDidMount() { 
+  componentDidMount() {
+    this._speak(); 
     socket.on("sendingsensordata", data => this.setState({ 
-      heatStatus: data.dhtstatus,
-      motionStatus: data.motionstatus,
-      lightStatus: data.lightstatus,
-      rainStatus: data.rainstatus 
+      temperature: data.temperature,
+      humidity: data.humidity,
+      motionStatus: data.motionStatus,
+      lightStatus: data.lightStatus,
+      rainStatus: data.rainStatus,
+      gasStatus: data.gasStatus,
+      garageStatus: data.garageStatus,
+      kitchenLightStatus: data.kitchenLightStatus,
+      livingRoomLightStatus: data.livingRoomLightStatus,
+      garageLightStatus: data.garageLightStatus,
+      gardenLightStatus: data.gardenLightStatus 
     }));
-    this._speak();
   }
 
     render(){   
 
     let { 
       isLoggedIn,
-      heatStatus,
+      temperature,
+      humidity,
       gasStatus, 
       garageStatus,
       rainStatus,
@@ -140,6 +163,7 @@ class StatusScreen extends Component{
       motionStatus,
       kitchenLightStatus,
       garageLightStatus,
+      gardenLightStatus,
       livingRoomLightStatus
     } = this.state;
 
@@ -147,6 +171,8 @@ class StatusScreen extends Component{
     let kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
     let garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
     let livingRoomLightTitle = livingRoomLightStatus ? 'Light is ON' : 'Light is OFF';
+    let heatStatus = `${temperature} C / ${humidity} %`;
+    let gardenLightTitle = gardenLightStatus ? 'Light is ON' : 'Light is OFF';
        
     const items = [
       { 
@@ -202,6 +228,12 @@ class StatusScreen extends Component{
         code: '#8e44ad', 
         imgurl:  Images.lightIcon, 
         content: garageLightTitle
+      },
+      { 
+        name: 'Garden Light', 
+        code: '#34495e', 
+        imgurl:  Images.lightIcon, 
+        content: gardenLightTitle
       }
     ];
     
