@@ -6,7 +6,10 @@ const images = {
 	lightIcon: require('./images/light.png'),
 	motionIcon: require('./images/motion.png'),
 	iotIcon: require('./images/iot.png'),
-	assistantIcon: require('./images/assistant.png')
+	assistantIcon: require('./images/assistant.png'),
+	TurkeyFlag: require('./images/Turkey.png'),
+	RussiaFlag: require('./images/Russia.png'),
+	UkFlag: require('./images/Uk.png')
 };
 
 

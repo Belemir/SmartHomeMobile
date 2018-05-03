@@ -36,6 +36,7 @@ export default class AssistantScreen extends React.Component {
       kitchenLightStatus: false,
       livingRoomLightStatus: false,
       garageLightStatus: false,
+      gardenLightStatus: false,
       speechText: ASSISTANT_INITIAL_SPEECH ,
       inProgress: false,
       pitch: 1,
@@ -44,22 +45,27 @@ export default class AssistantScreen extends React.Component {
   };
 
   componentDidMount(){
+    this._speak();
     socket.on("sendingsensordata", data => this.setState({ 
-      temperature: data.temperature,
-      humidity: data.humidity,
-      motionStatus: data.motionstatus,
-      lightStatus: data.lightstatus,
-      rainStatus: data.rainstatus 
+          temperature: data.temperature,
+          humidity: data.humidity,
+          motionStatus: data.motionStatus,
+          lightStatus: data.lightStatus,
+          rainStatus: data.rainStatus,
+          gasStatus: data.gasStatus,
+          garageStatus: data.garageStatus,
+          kitchenLightStatus: data.kitchenLightStatus,
+          livingRoomLightStatus: data.livingRoomLightStatus,
+          garageLightStatus: data.garageLightStatus,
+          gardenLightStatus: data.gardenLightStatus 
     }, () => {
       this.setState({
-        speechText: `Heat Status ${temperature} celsius and ${humidity} percent of humidity
-                     Motion Status ${motionStatus}
-                     Light Status ${lightStatus}
-                     Rain Status ${rainStatus}
+        speechText: `Heat Status ${ this.state.temperature } celsius...
+                     Humidity ${ this.state.humidity } percent ...
+                      ${ this.state.rainStatus }...
                     `
       })
     }));
-    this._speak();
   }
 
   render() {
