@@ -99,6 +99,8 @@ class StatusScreen extends Component{
     switch(iconName){
 
       case 'Garage Door':
+      case 'Гаражная Дверь':
+      case 'Garaj Kapısı':
            this.setState({
              garageStatus: !this.state.garageStatus,
              speechText: garageDoorSpeech
@@ -110,6 +112,8 @@ class StatusScreen extends Component{
 
 
        case 'Kitchen Light':
+       case 'Свет в Кухне':
+       case 'Mutfak Işığı':
            this.setState({
              kitchenLightStatus: !this.state.kitchenLightStatus,
              speechText: kitchenLightSpeech
@@ -120,6 +124,8 @@ class StatusScreen extends Component{
            break;
 
        case 'Living Room Light':
+       case 'Свет в Зале':
+       case 'Salon Işığı':
            this.setState({
              livingRoomLightStatus: !this.state.livingRoomLightStatus,
              speechText: livingRoomLightSpeech
@@ -130,6 +136,8 @@ class StatusScreen extends Component{
            break;
 
        case 'Garage Light':
+       case 'Свет в Гараже':
+       case 'Garaj Işığı':
            this.setState({
              garageLightStatus: !this.state.garageLightStatus,
              speechText: garageLightSpeech
@@ -141,6 +149,8 @@ class StatusScreen extends Component{
         
 
         case 'Garden Light':
+        case 'Свет в Саду':
+        case 'Bahçe Işığı':
           this.setState({
             gardenLightStatus: !this.state.gardenLightStatus,
             speechText: gardenLightSpeech
@@ -200,7 +210,8 @@ class StatusScreen extends Component{
         loadingText: LOADING_TEXT_EN
       }, () => {
         this._speak();
-      });
+      }
+      );
       break;
 
     case 'Turkish':

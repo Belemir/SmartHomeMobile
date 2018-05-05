@@ -18,6 +18,11 @@ const LOADING_TEXT_TR = "Veriler Yükleniyor ...";
 const LOADING_TEXT_RU = "Получение Данных ...";
 
 
+// const ASSISTANT_DATA_SPEECH_EN = `Heat Status ${ this.state.temperature } celsius...Humidity ${ this.state.humidity } percent ...${ this.state.rainStatus }...`;
+// const ASSISTANT_DATA_SPEECH_RU = `Isı derecesi ${ this.state.temperature }...Nem derecesi yüzde ${ this.state.humidity } ...${ this.state.rainStatus }...`;
+// const ASSISTANT_DATA_SPEECH_TR = `Температура ${ this.state.temperature } ...Влажность ${ this.state.humidity }  ...${ this.state.rainStatus }...`;
+
+
 const ASSISTANT_INITIAL_SPEECH_RU = "На этой странице находится информация статусе дома. Еслм вы хотите получить помощь ассистента - просто нажмите на правый нижний угол экрана";
 const ASSISTANT_INITIAL_SPEECH_EN = "Hello, I am your assistant, data from sensors are being fetched, you can check home status by clicking center of the screen";
 const ASSISTANT_INITIAL_SPEECH_TR = "Bu sayfa evinizin durumunu gösteriyor.Asistan desteğini almak istiyorsanız, ekranın altındaki sağ köşeye tıklayın."
@@ -40,6 +45,7 @@ class AssistantScreen extends React.Component {
       lightStatus: LOADING_TEXT_EN,
       endpoint: "http://192.168.1.109:8888",
       isLoggedIn: true,
+      languageSelected: 'en',
       kitchenLightStatus: false,
       livingRoomLightStatus: false,
       garageLightStatus: false,
@@ -60,7 +66,9 @@ class AssistantScreen extends React.Component {
           gasStatus: LOADING_TEXT_EN,
           rainStatus: LOADING_TEXT_EN,
           motionStatus: LOADING_TEXT_EN,
-          lightStatus: LOADING_TEXT_EN
+          lightStatus: LOADING_TEXT_EN,
+          speechText: ASSISTANT_INITIAL_SPEECH_EN,
+          languageSelected: 'en'
         });
         break;
   
@@ -71,7 +79,9 @@ class AssistantScreen extends React.Component {
           gasStatus: LOADING_TEXT_TR,
           rainStatus: LOADING_TEXT_TR,
           motionStatus: LOADING_TEXT_TR,
-          lightStatus: LOADING_TEXT_TR
+          lightStatus: LOADING_TEXT_TR,
+          speechText: ASSISTANT_INITIAL_SPEECH_TR,
+          languageSelected: 'tr'
         });
         break;
   
@@ -82,7 +92,9 @@ class AssistantScreen extends React.Component {
           gasStatus: LOADING_TEXT_RU,
           rainStatus: LOADING_TEXT_RU,
           motionStatus: LOADING_TEXT_RU,
-          lightStatus: LOADING_TEXT_RU
+          lightStatus: LOADING_TEXT_RU,
+          speechText: ASSISTANT_INITIAL_SPEECH_RU,
+          languageSelected: 'ru-Latn'
         });
         break;
     }
@@ -149,7 +161,7 @@ class AssistantScreen extends React.Component {
     };
 
     Speech.speak(this.state.speechText, {
-      language: 'en',
+      language: this.state.languageSelected,
       pitch: this.state.pitch,
       rate: this.state.rate,
       onStart: start,
