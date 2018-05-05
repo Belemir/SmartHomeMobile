@@ -3,11 +3,15 @@ import {  StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Images from '@assets/images';
 import { Speech } from 'expo';
+import { connect } from 'react-redux';
+import { withNavigation } from 'react-navigation';
+import { languageChanged } from '../actions';
 
 
 const ASSISTANT_INITIAL_SPEECH_EN = "Welcome to the smart home simulator, If you want to get assistant support, just click the right corner on the bottom of the screen";
 const ASSISTANT_INITIAL_SPEECH_TR = "Akıllı ev simülatörüne hoş geldiniz, Asistan desteğini almak istiyorsanız, ekranın altındaki sağ köşeye tıklayın.";
-const ASSISTANT_INITIAL_SPEECH_RU = "Добро пожаловать в интеллектуальный домашний симулятор. Если вы хотите получить поддержку помощника, просто нажмите правый угол внизу экрана";
+const ASSISTANT_INITIAL_SPEECH_RU = "Добро пожаловать в симулятор умного дома. Если вы хотите получить поддержку помощника, просто нажмите правый угол внизу экрана";
+
 class WelcomeScreen extends Component{
 
     state = {
@@ -30,6 +34,7 @@ class WelcomeScreen extends Component{
               speechText: ASSISTANT_INITIAL_SPEECH_TR
             }, () => {
               this._speak();
+              this.props.languageChanged(lang);
             });
             break;
           
@@ -39,6 +44,7 @@ class WelcomeScreen extends Component{
               speechText: ASSISTANT_INITIAL_SPEECH_RU
             }, () => {
               this._speak();
+              this.props.languageChanged(lang);
             });
             break;
           
@@ -48,6 +54,7 @@ class WelcomeScreen extends Component{
               speechText: ASSISTANT_INITIAL_SPEECH_EN
             }, () => {
               this._speak();
+              this.props.languageChanged(lang)
             });
             break;
         }
@@ -86,6 +93,7 @@ class WelcomeScreen extends Component{
                     source={Images.iotIcon}
                     style={iconStyle}
                 />
+
                 <Text style={textStyle}>
                     Welcome To Smart Home Simulator
                 </Text>
@@ -133,6 +141,11 @@ class WelcomeScreen extends Component{
         }
       });
 
+      const mapStateToProps = ({ lang }) => {
+        const { langSelected } = lang;
+        return { langSelected }
+      }
+
         
 
-export default WelcomeScreen;
+export default connect(mapStateToProps, { languageChanged })(withNavigation(WelcomeScreen));
