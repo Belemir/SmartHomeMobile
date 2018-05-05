@@ -96,15 +96,6 @@ class StatusScreen extends Component{
   
   _handleIconClick = iconName => {
 
-    let { garageStatus,
-          livingRoomLightStatus,
-          garageLightStatus,
-          kitchenLightStatus,
-          gardenLightStatus
-        } = this.state;
-
-
-    
     switch(iconName){
 
       case 'Garage Door':
@@ -113,7 +104,7 @@ class StatusScreen extends Component{
              speechText: garageDoorSpeech
            }, () => {
              socket.emit('garageDoorEvent',{ garageData: this.state.garageStatus });
-             this._speak();
+             this._setLangForClickActions(this.props.langSelected);
            });
            break;
 
@@ -124,7 +115,7 @@ class StatusScreen extends Component{
              speechText: kitchenLightSpeech
            }, () => {
              socket.emit('kitchenLightEvent',{ kitchenLightData: this.state.kitchenLightStatus });
-             this._speak();
+             this._setLangForClickActions(this.props.langSelected);
            });
            break;
 
@@ -134,7 +125,7 @@ class StatusScreen extends Component{
              speechText: livingRoomLightSpeech
            }, () => {
              socket.emit('livingRoomLightEvent',{ livingRoomLightData: this.state.livingRoomLightStatus });
-             this._speak();
+             this._setLangForClickActions(this.props.langSelected);
            });
            break;
 
@@ -144,21 +135,143 @@ class StatusScreen extends Component{
              speechText: garageLightSpeech
            }, () => {
              socket.emit('garageLightEvent',{ garageLightData: this.state.garageLightStatus });
-             this._speak();
+             this._setLangForClickActions(this.props.langSelected);
            });
            break;
         
 
         case 'Garden Light':
-        this.setState({
-          gardenLightStatus: !this.state.gardenLightStatus,
-          speechText: gardenLightSpeech
-        }, () => {
-          socket.emit('gardenLightEvent',{ gardenLightData: this.state.garageLightStatus });
-          this._speak();
-        });
-        break;
+          this.setState({
+            gardenLightStatus: !this.state.gardenLightStatus,
+            speechText: gardenLightSpeech
+          }, () => {
+            socket.emit('gardenLightEvent',{ gardenLightData: this.state.gardenLightStatus });
+            this._setLangForClickActions(this.props.langSelected);
+          });
+          break;
     }
+ }
+
+ _setLangForClickActions = lang => {
+  let { 
+    isLoggedIn,
+    temperature,
+    humidity,
+    gasStatus, 
+    garageStatus,
+    rainStatus,
+    lightStatus,
+    motionStatus,
+    kitchenLightStatus,
+    garageLightStatus,
+    gardenLightStatus,
+    livingRoomLightStatus
+  } = this.state;
+
+  switch(lang){
+    case 'English':
+
+       heatHumidityName = 'Heat & Humidity';
+       gasStatusName = 'Gas Status';
+       garageDoorName = 'Garage Door';
+       rainStatusName = 'Rain Status';
+       motionStatusName = 'Motion Status';
+       lightStatusName = 'Light Status';
+       kitchenLightName = 'Kitchen Light';
+       livingRoomLightName = 'Living Room Light';
+       garageLightName = 'Garage Light';
+       gardenLightName = 'Garden Light';
+   
+       garageDoorSpeech = garageStatus ? 'Garage was closed' : 'Garage was opened';
+       livingRoomLightSpeech = livingRoomLightStatus ? 'Living room light was switched off' : 'Living room light was switched on';
+       garageLightSpeech = garageLightStatus ? 'Garage light was switched off' : 'Garage light was switched on';
+       kitchenLightSpeech = kitchenLightStatus ? 'Kitchen light was switched off' : 'Kitchen light was switched on';
+       gardenLightSpeech = gardenLightStatus ? 'Garden light was switched off' : 'Garden light was switched on';
+
+       garageDoorTitle = garageStatus ? 'Garage is OPEN' : 'Garage is CLOSED';
+       kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
+       garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
+       livingRoomLightTitle = livingRoomLightStatus ? 'Light is ON' : 'Light is OFF';
+       heatStatus = `${temperature} C / ${humidity} %`;
+       gardenLightTitle = gardenLightStatus ? 'Light is ON' : 'Light is OFF';
+      
+      this.setState({ 
+        languageSelected: 'en',
+        loadingText: LOADING_TEXT_EN
+      }, () => {
+        this._speak();
+      });
+      break;
+
+    case 'Turkish':
+
+       heatHumidityName = 'Isı ve Nem';
+       gasStatusName = 'Gaz Sensörü';
+       garageDoorName = 'Garaj Kapısı';
+       rainStatusName = 'Yağmur Sensörü';
+       motionStatusName = 'Hareket Sensörü';
+       lightStatusName = 'Işık Sensörü';
+       kitchenLightName = 'Mutfak Işığı';
+       livingRoomLightName = 'Salon Işığı';
+       garageLightName = 'Garaj Işığı';
+       gardenLightName = 'Bahçe Işığı';
+
+       garageDoorSpeech = garageStatus ? 'Garaj kapatıldı' : 'Garaj açıldı';
+       livingRoomLightSpeech = livingRoomLightStatus ? 'Salon ışığı kapatıldı' : 'Salon ışığı açıldı';
+       garageLightSpeech = garageLightStatus ? 'Garaj ışığı kapatıldı' : 'Garaj ışığı açıldı';
+       kitchenLightSpeech = kitchenLightStatus ? 'Mutfak ışığı kapatıldı' : 'Mutfak ışığı açıldı';
+       gardenLightSpeech = gardenLightStatus ? 'Bahçe ışığı kapatıldı' : 'Bahçe ışığı açıldı';
+
+       garageDoorTitle = garageStatus ? 'Garaj AÇIK' : 'Garaj KAPALI';
+       kitchenLightTitle = kitchenLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       garageLightTitle = garageLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       livingRoomLightTitle = livingRoomLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       heatStatus = `${temperature} C / ${humidity} %`;
+       gardenLightTitle = gardenLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+
+      this.setState({ 
+        languageSelected : 'tr',
+        loadingText: LOADING_TEXT_TR
+       }, () => {
+         this._speak();
+       });
+      break;
+
+
+    case 'Russian':
+
+      heatHumidityName = 'Температура и Влажность';
+      gasStatusName = 'Датчик Газа';
+      garageDoorName = 'Гаражная Дверь';
+      rainStatusName = 'Датчик Дождя';
+      motionStatusName = 'Датчик Движения';
+      lightStatusName = 'Датчик Света';
+      kitchenLightName = 'Свет в Кухне';
+      livingRoomLightName = 'Свет в Зале';
+      garageLightName = 'Свет в Гараже';
+      gardenLightName = 'Свет в Саду';
+
+      garageDoorSpeech = garageStatus ? 'Гараж Закрыт' : 'Гараж Открыт';
+      livingRoomLightSpeech = livingRoomLightStatus ? 'Свет в Зале Выключен' : 'Свет в Зале Включён';
+      garageLightSpeech = garageLightStatus ? 'Свет в Гараже Выключен' : 'Свет в Гараже Включён';
+      kitchenLightSpeech = kitchenLightStatus ? 'Свет в Кухне Выключен' : 'Свет в Кухне Включён';
+      gardenLightSpeech = gardenLightStatus ? 'Свет в Саду Выключен' : 'Свет в Саду Включён';
+
+      garageDoorTitle = garageStatus ? 'Гараж Открыт' : 'Гараж Закрыт';
+      kitchenLightTitle = kitchenLightStatus ? 'Свет Включён' : 'Свет Выключен';
+      garageLightTitle = garageLightStatus ? 'Свет Включён' : 'Свет Выключен';
+      livingRoomLightTitle = livingRoomLightStatus ? 'Свет Включён' : 'Свет Выключен';
+      heatStatus = `${temperature} C / ${humidity} %`;
+      gardenLightTitle = gardenLightStatus ? 'Свет Включён' : 'Свет Выключен';
+
+    this.setState({ 
+      languageSelected : 'ru-Latn',
+      loadingText: LOADING_TEXT_RU
+      }, () => {
+        this._speak();
+      });
+    break;
+ }
  }
 
  _setLangContent = lang => {
@@ -286,6 +399,7 @@ class StatusScreen extends Component{
     break;
  }
  }
+
  _setSelectedLang = lang => {
   switch(lang){
     case 'English':
@@ -373,13 +487,6 @@ class StatusScreen extends Component{
       gardenLightStatus,
       livingRoomLightStatus
     } = this.state;
-
-    // let garageDoorTitle = garageStatus ? 'Garage is OPEN' : 'Garage is CLOSED';
-    // let kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
-    // let garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
-    // let livingRoomLightTitle = livingRoomLightStatus ? 'Light is ON' : 'Light is OFF';
-    // let heatStatus = `${temperature} C / ${humidity} %`;
-    // let gardenLightTitle = gardenLightStatus ? 'Light is ON' : 'Light is OFF';
        
     const items = [
       { 
