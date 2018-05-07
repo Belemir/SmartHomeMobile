@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'; 
+import {  StyleSheet, View, Text, Image, TouchableOpacity, Alert, Platform } from 'react-native'; 
 import socketIOClient from 'socket.io-client';
 import { Speech } from 'expo';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import GridView from 'react-native-super-grid';
 import { withNavigation } from 'react-navigation';
 import Images from '@assets/images';
-
+import { Notifications, Permissions, Constants } from 'expo';
 
 const LOADING_TEXT_EN = "Fetching Data ...";
 const LOADING_TEXT_TR = "Veriler Yükleniyor ...";
@@ -44,19 +44,20 @@ let livingRoomLightTitle = '';
 let heatStatus = '';
 let gardenLightTitle = '';
 
+
 class StatusScreen extends Component{
 
   constructor() {
     super();
     
     this.state = {
-      temperature: LOADING_TEXT_EN,
-      humidity: '',
-      gasStatus: LOADING_TEXT_EN,
+      temperature: false,
+      humidity: false,
+      gasStatus: false,
       garageStatus: false,
-      rainStatus: LOADING_TEXT_EN,
-      motionStatus: LOADING_TEXT_EN,
-      lightStatus: LOADING_TEXT_EN,
+      rainStatus: false,
+      motionStatus: false,
+      lightStatus: false,
       endpoint: "http://192.168.1.109:8888",
       isLoggedIn: true,
       kitchenLightStatus: false,
@@ -67,9 +68,11 @@ class StatusScreen extends Component{
       speechText: ASSISTANT_INITIAL_SPEECH_EN ,
       inProgress: false,
       pitch: 1,
-      rate: 1,
+      rate: 1
     }; 
   };
+
+
 
   _speak = () => {
     const start = () => {
@@ -197,7 +200,12 @@ class StatusScreen extends Component{
        garageLightSpeech = garageLightStatus ? 'Garage light was switched off' : 'Garage light was switched on';
        kitchenLightSpeech = kitchenLightStatus ? 'Kitchen light was switched off' : 'Kitchen light was switched on';
        gardenLightSpeech = gardenLightStatus ? 'Garden light was switched off' : 'Garden light was switched on';
-
+       
+       heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_EN;
+       gasStatusTitle = gasStatus ? 'Gas Detected' : LOADING_TEXT_EN;
+       rainStatusTitle = rainStatus ? 'Rain Detected' : LOADING_TEXT_EN;
+       motionStatusTitle = motionStatus ? 'Motion Detected' : LOADING_TEXT_EN;
+       lightStatusTitle = lightStatus ? 'Light Detected' : LOADING_TEXT_EN;
        garageDoorTitle = garageStatus ? 'Garage is OPEN' : 'Garage is CLOSED';
        kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
        garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
@@ -233,6 +241,12 @@ class StatusScreen extends Component{
        kitchenLightSpeech = kitchenLightStatus ? 'Mutfak ışığı kapatıldı' : 'Mutfak ışığı açıldı';
        gardenLightSpeech = gardenLightStatus ? 'Bahçe ışığı kapatıldı' : 'Bahçe ışığı açıldı';
 
+
+       heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_TR;
+       gasStatusTitle = gasStatus ? 'Gaz Tespit Edildi' : LOADING_TEXT_TR;
+       rainStatusTitle = rainStatus ? 'Yağmur Algılandı' : LOADING_TEXT_TR;
+       motionStatusTitle = motionStatus ? 'Hareket Algılandı' : LOADING_TEXT_TR;
+       lightStatusTitle = lightStatus ? 'Işık Algılandı' : LOADING_TEXT_TR;
        garageDoorTitle = garageStatus ? 'Garaj AÇIK' : 'Garaj KAPALI';
        kitchenLightTitle = kitchenLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
        garageLightTitle = garageLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
@@ -268,6 +282,12 @@ class StatusScreen extends Component{
       kitchenLightSpeech = kitchenLightStatus ? 'Свет в Кухне Выключен' : 'Свет в Кухне Включён';
       gardenLightSpeech = gardenLightStatus ? 'Свет в Саду Выключен' : 'Свет в Саду Включён';
 
+
+      heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_RU;
+      gasStatusTitle = gasStatus ? 'Обнаружен Газ' : LOADING_TEXT_RU;
+      rainStatusTitle = rainStatus ? 'Обнаружен Дождь' : LOADING_TEXT_RU;
+      motionStatusTitle = motionStatus ? 'Обнаружено Движение' : LOADING_TEXT_RU;
+      lightStatusTitle = lightStatus ? 'Обнаружен Свет' : LOADING_TEXT_RU;
       garageDoorTitle = garageStatus ? 'Гараж Открыт' : 'Гараж Закрыт';
       kitchenLightTitle = kitchenLightStatus ? 'Свет Включён' : 'Свет Выключен';
       garageLightTitle = garageLightStatus ? 'Свет Включён' : 'Свет Выключен';
@@ -322,6 +342,11 @@ class StatusScreen extends Component{
        kitchenLightSpeech = kitchenLightStatus ? 'Kitchen light was switched off' : 'Kitchen light was switched on';
        gardenLightSpeech = gardenLightStatus ? 'Garden light was switched off' : 'Garden light was switched on';
 
+       heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_EN;
+       gasStatusTitle = gasStatus ? 'Gas Detected' : LOADING_TEXT_EN;
+       rainStatusTitle = rainStatus ? 'Rain Detected' : LOADING_TEXT_EN;
+       motionStatusTitle = motionStatus ? 'Motion Detected' : LOADING_TEXT_EN;
+       lightStatusTitle = lightStatus ? 'Light Detected' : LOADING_TEXT_EN;
        garageDoorTitle = garageStatus ? 'Garage is OPEN' : 'Garage is CLOSED';
        kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
        garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
@@ -357,6 +382,12 @@ class StatusScreen extends Component{
        kitchenLightSpeech = kitchenLightStatus ? 'Mutfak ışığı kapatıldı' : 'Mutfak ışığı açıldı';
        gardenLightSpeech = gardenLightStatus ? 'Bahçe ışığı kapatıldı' : 'Bahçe ışığı açıldı';
 
+
+       heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_TR;
+       gasStatusTitle = gasStatus ? 'Gaz Tespit Edildi' : LOADING_TEXT_TR;
+       rainStatusTitle = rainStatus ? 'Yağmur Algılandı' : LOADING_TEXT_TR;
+       motionStatusTitle = motionStatus ? 'Hareket Algılandı' : LOADING_TEXT_TR;
+       lightStatusTitle = lightStatus ? 'Işık Algılandı' : LOADING_TEXT_TR;
        garageDoorTitle = garageStatus ? 'Garaj AÇIK' : 'Garaj KAPALI';
        kitchenLightTitle = kitchenLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
        garageLightTitle = garageLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
@@ -393,6 +424,12 @@ class StatusScreen extends Component{
       kitchenLightSpeech = kitchenLightStatus ? 'Свет в Кухне Выключен' : 'Свет в Кухне Включён';
       gardenLightSpeech = gardenLightStatus ? 'Свет в Саду Выключен' : 'Свет в Саду Включён';
 
+
+      heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_RU;
+      gasStatusTitle = gasStatus ? 'Обнаружен Газ' : LOADING_TEXT_RU;
+      rainStatusTitle = rainStatus ? 'Обнаружен Дождь' : LOADING_TEXT_RU;
+      motionStatusTitle = motionStatus ? 'Обнаружено Движение' : LOADING_TEXT_RU;
+      lightStatusTitle = lightStatus ? 'Обнаружен Свет' : LOADING_TEXT_RU;
       garageDoorTitle = garageStatus ? 'Гараж Открыт' : 'Гараж Закрыт';
       kitchenLightTitle = kitchenLightStatus ? 'Свет Включён' : 'Свет Выключен';
       garageLightTitle = garageLightStatus ? 'Свет Включён' : 'Свет Выключен';
@@ -411,50 +448,131 @@ class StatusScreen extends Component{
  }
  }
 
- _setSelectedLang = lang => {
+ _setLangContentWithoutSpeech = lang => {
+
+  let { 
+    isLoggedIn,
+    temperature,
+    humidity,
+    gasStatus, 
+    garageStatus,
+    rainStatus,
+    lightStatus,
+    motionStatus,
+    kitchenLightStatus,
+    garageLightStatus,
+    gardenLightStatus,
+    livingRoomLightStatus
+  } = this.state;
+
   switch(lang){
     case 'English':
 
-      this.setState({
-        temperature: LOADING_TEXT_EN,
-        gasStatus: LOADING_TEXT_EN,
-        rainStatus: LOADING_TEXT_EN,
-        motionStatus: LOADING_TEXT_EN,
-        lightStatus: LOADING_TEXT_EN
-      });
-      break;
+       heatHumidityName = 'Heat & Humidity';
+       gasStatusName = 'Gas Status';
+       garageDoorName = 'Garage Door';
+       rainStatusName = 'Rain Status';
+       motionStatusName = 'Motion Status';
+       lightStatusName = 'Light Status';
+       kitchenLightName = 'Kitchen Light';
+       livingRoomLightName = 'Living Room Light';
+       garageLightName = 'Garage Light';
+       gardenLightName = 'Garden Light';
+   
+       garageDoorSpeech = garageStatus ? 'Garage was closed' : 'Garage was opened';
+       livingRoomLightSpeech = livingRoomLightStatus ? 'Living room light was switched off' : 'Living room light was switched on';
+       garageLightSpeech = garageLightStatus ? 'Garage light was switched off' : 'Garage light was switched on';
+       kitchenLightSpeech = kitchenLightStatus ? 'Kitchen light was switched off' : 'Kitchen light was switched on';
+       gardenLightSpeech = gardenLightStatus ? 'Garden light was switched off' : 'Garden light was switched on';
+
+       heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_EN;
+       gasStatusTitle = gasStatus ? 'Gas Detected' : LOADING_TEXT_EN;
+       rainStatusTitle = rainStatus ? 'Rain Detected' : LOADING_TEXT_EN;
+       motionStatusTitle = motionStatus ? 'Motion Detected' : LOADING_TEXT_EN;
+       lightStatusTitle = lightStatus ? 'Light Detected' : LOADING_TEXT_EN;
+       garageDoorTitle = garageStatus ? 'Garage is OPEN' : 'Garage is CLOSED';
+       kitchenLightTitle = kitchenLightStatus ? 'Light is ON' : 'Light is OFF';
+       garageLightTitle = garageLightStatus ? 'Light is ON' : 'Light is OFF';
+       livingRoomLightTitle = livingRoomLightStatus ? 'Light is ON' : 'Light is OFF';
+       heatStatus = `${temperature} C / ${humidity} %`;
+       gardenLightTitle = gardenLightStatus ? 'Light is ON' : 'Light is OFF';
+       break;
 
     case 'Turkish':
 
-      this.setState({
-        temperature: LOADING_TEXT_TR,
-        gasStatus: LOADING_TEXT_TR,
-        rainStatus: LOADING_TEXT_TR,
-        motionStatus: LOADING_TEXT_TR,
-        lightStatus: LOADING_TEXT_TR
-      });
-      break;
+       heatHumidityName = 'Isı ve Nem';
+       gasStatusName = 'Gaz Sensörü';
+       garageDoorName = 'Garaj Kapısı';
+       rainStatusName = 'Yağmur Sensörü';
+       motionStatusName = 'Hareket Sensörü';
+       lightStatusName = 'Işık Sensörü';
+       kitchenLightName = 'Mutfak Işığı';
+       livingRoomLightName = 'Salon Işığı';
+       garageLightName = 'Garaj Işığı';
+       gardenLightName = 'Bahçe Işığı';
+
+       garageDoorSpeech = garageStatus ? 'Garaj kapatıldı' : 'Garaj açıldı';
+       livingRoomLightSpeech = livingRoomLightStatus ? 'Salon ışığı kapatıldı' : 'Salon ışığı açıldı';
+       garageLightSpeech = garageLightStatus ? 'Garaj ışığı kapatıldı' : 'Garaj ışığı açıldı';
+       kitchenLightSpeech = kitchenLightStatus ? 'Mutfak ışığı kapatıldı' : 'Mutfak ışığı açıldı';
+       gardenLightSpeech = gardenLightStatus ? 'Bahçe ışığı kapatıldı' : 'Bahçe ışığı açıldı';
+
+
+       heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_TR;
+       gasStatusTitle = gasStatus ? 'Gaz Tespit Edildi' : LOADING_TEXT_TR;
+       rainStatusTitle = rainStatus ? 'Yağmur Algılandı' : LOADING_TEXT_TR;
+       motionStatusTitle = motionStatus ? 'Hareket Algılandı' : LOADING_TEXT_TR;
+       lightStatusTitle = lightStatus ? 'Işık Algılandı' : LOADING_TEXT_TR;
+       garageDoorTitle = garageStatus ? 'Garaj AÇIK' : 'Garaj KAPALI';
+       kitchenLightTitle = kitchenLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       garageLightTitle = garageLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       livingRoomLightTitle = livingRoomLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       heatStatus = `${temperature} C / ${humidity} %`;
+       gardenLightTitle = gardenLightStatus ? 'Işık AÇIK' : 'Işık KAPALI';
+       break;
+
 
     case 'Russian':
 
-      this.setState({
-        temperature: LOADING_TEXT_RU,
-        gasStatus: LOADING_TEXT_RU,
-        rainStatus: LOADING_TEXT_RU,
-        motionStatus: LOADING_TEXT_RU,
-        lightStatus: LOADING_TEXT_RU
-      });
+      heatHumidityName = 'Температура и Влажность';
+      gasStatusName = 'Датчик Газа';
+      garageDoorName = 'Гаражная Дверь';
+      rainStatusName = 'Датчик Дождя';
+      motionStatusName = 'Датчик Движения';
+      lightStatusName = 'Датчик Света';
+      kitchenLightName = 'Свет в Кухне';
+      livingRoomLightName = 'Свет в Зале';
+      garageLightName = 'Свет в Гараже';
+      gardenLightName = 'Свет в Саду';
+
+      garageDoorSpeech = garageStatus ? 'Гараж Закрыт' : 'Гараж Открыт';
+      livingRoomLightSpeech = livingRoomLightStatus ? 'Свет в Зале Выключен' : 'Свет в Зале Включён';
+      garageLightSpeech = garageLightStatus ? 'Свет в Гараже Выключен' : 'Свет в Гараже Включён';
+      kitchenLightSpeech = kitchenLightStatus ? 'Свет в Кухне Выключен' : 'Свет в Кухне Включён';
+      gardenLightSpeech = gardenLightStatus ? 'Свет в Саду Выключен' : 'Свет в Саду Включён';
+
+
+      heatHumidityTitle = temperature && humidity ? `${temperature} C / ${humidity} %` : LOADING_TEXT_RU;
+      gasStatusTitle = gasStatus ? 'Обнаружен Газ' : LOADING_TEXT_RU;
+      rainStatusTitle = rainStatus ? 'Обнаружен Дождь' : LOADING_TEXT_RU;
+      motionStatusTitle = motionStatus ? 'Обнаружено Движение' : LOADING_TEXT_RU;
+      lightStatusTitle = lightStatus ? 'Обнаружен Свет' : LOADING_TEXT_RU;
+      garageDoorTitle = garageStatus ? 'Гараж Открыт' : 'Гараж Закрыт';
+      kitchenLightTitle = kitchenLightStatus ? 'Свет Включён' : 'Свет Выключен';
+      garageLightTitle = garageLightStatus ? 'Свет Включён' : 'Свет Выключен';
+      livingRoomLightTitle = livingRoomLightStatus ? 'Свет Включён' : 'Свет Выключен';
+      heatStatus = `${temperature} C / ${humidity} %`;
+      gardenLightTitle = gardenLightStatus ? 'Свет Включён' : 'Свет Выключен';
       break;
-  }
+ }
  }
  
   componentWillMount(){
-    this._setSelectedLang(this.props.langSelected);
+    this._setLangContent(this.props.langSelected);
   }
 
   componentWillReceiveProps(nextProps){
     if(nextProps.langSelected !== this.props.langSelected){
-      this._setSelectedLang(nextProps.langSelected);
       this._setLangContent(nextProps.langSelected);
     }
   }
@@ -462,26 +580,53 @@ class StatusScreen extends Component{
  
   componentDidMount() {
 
-    
-    this._setSelectedLang(this.props.langSelected);
-    this._setLangContent(this.props.langSelected)
-    
-    // this._speak(); 
-    socket.on("sendingsensordata", data => this.setState({ 
-      temperature: data.temperature,
-      humidity: data.humidity,
-      motionStatus: data.motionStatus,
-      lightStatus: data.lightStatus,
-      rainStatus: data.rainStatus,
-      gasStatus: data.gasStatus,
-      garageStatus: data.garageStatus,
-      kitchenLightStatus: data.kitchenLightStatus,
-      livingRoomLightStatus: data.livingRoomLightStatus,
-      garageLightStatus: data.garageLightStatus,
-      gardenLightStatus: data.gardenLightStatus 
-    }));
+    socket.on("sendingsensordata", data => {
+      this.setState({ 
+        temperature: data.temperature,
+        humidity: data.humidity,
+        motionStatus: data.motionStatus,
+        lightStatus: data.lightStatus,
+        rainStatus: data.rainStatus,
+        gasStatus: data.gasStatus,
+        garageStatus: data.garageStatus,
+        kitchenLightStatus: data.kitchenLightStatus,
+        livingRoomLightStatus: data.livingRoomLightStatus,
+        garageLightStatus: data.garageLightStatus,
+        gardenLightStatus: data.gardenLightStatus 
+      })
+      this._setLangContentWithoutSpeech(this.props.langSelected);
+      if(this.state.gasStatus && this.props.langSelected === 'English'){
+        alert('GAS DETECTED !!!');
+      }
+      if(this.state.gasStatus && this.props.langSelected === 'Turkish'){
+        alert('GAZ TESPİT EDİLDİ !!!');
+      }
+      if(this.state.gasStatus && this.props.langSelected === 'Russian'){
+        alert('ОБНАРУЖЕН ГАЗ !!!');
+      }
+      if(this.state.motionStatus && this.props.langSelected === 'English'){
+        alert('MAIN DOOR OPENED !!!');
+      }  
+      if(this.state.motionStatus && this.props.langSelected === 'Turkish'){
+        alert('ANA KAPI AÇILDI !!!');
+      }
+      if(this.state.motionStatus && this.props.langSelected === 'Russian'){
+        alert('ОСНОВНАЯ ДВЕРЬ ОТКРЫТА !!!');
+      }
+      if(this.state.rainStatus && this.props.langSelected === 'English'){
+        alert('IT IS RAINING !!!');
+      }
+      if(this.state.rainStatus && this.props.langSelected === 'Turkish'){
+        alert('YAĞMUR YAĞMAYA BAŞLADI !!!');
+      }
+      if(this.state.rainStatus && this.props.langSelected === 'Russian'){
+        alert('НАЧАЛСЯ ДОЖДЬ !!!');
+      }
+    }
+  );
   }
 
+  
     render(){   
 
     let { 
@@ -504,13 +649,13 @@ class StatusScreen extends Component{
         name: heatHumidityName,
         code: '#1abc9c', 
         imgurl: Images.temperatureIcon,
-        content:  heatStatus
+        content:  heatHumidityTitle
       },
       { 
         name: gasStatusName,
         code: '#2ecc71', 
         imgurl: Images.gasIcon, 
-        content: gasStatus
+        content: gasStatusTitle
        },
       { 
         name: garageDoorName, 
@@ -522,19 +667,19 @@ class StatusScreen extends Component{
         name: rainStatusName, 
         code: '#9b59b6', 
         imgurl: Images.rainIcon, 
-        content: rainStatus
+        content: rainStatusTitle
       },
       { 
         name: motionStatusName, 
         code: '#34495e', 
         imgurl: Images.motionIcon, 
-        content: motionStatus
+        content: motionStatusTitle
       },
       { 
         name: lightStatusName, 
         code: '#16a085', 
         imgurl: Images.lightIcon, 
-        content: lightStatus
+        content: lightStatusTitle
       },
       { 
         name: kitchenLightName, 
